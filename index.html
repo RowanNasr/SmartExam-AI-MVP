@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SmartExam AI — MVP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandmark">SE</div>
+      <div>
+        <div class="brandname">SmartExam AI</div>
+        <div class="brandsub">Physical Exam Hall Monitoring — MVP</div>
+      </div>
+    </div>
+    <div class="pill">Human-in-the-Loop</div>
+  </header>
+
+  <main class="shell">
+    <section class="hero panel">
+      <div>
+        <div class="eyebrow">ASSESSMENT REVOLUTION</div>
+        <h1>AI-assisted invigilation for physical exam halls</h1>
+        <p class="lead">
+          Existing camera or uploaded video → event detection → evidence capture →
+          AI incident summary → authorized human review.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong id="statStatus">Idle</strong><span>Session status</span></div>
+        <div class="stat"><strong id="statEvents">0</strong><span>Flagged events</span></div>
+        <div class="stat"><strong id="statReviewed">0</strong><span>Reviewed</span></div>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <div class="panel">
+        <div class="panelhead">
+          <div>
+            <div class="eyebrow">1. INPUT</div>
+            <h2>Live / Recorded Exam Feed</h2>
+          </div>
+          <div class="statusdot" id="feedDot"></div>
+        </div>
+
+        <div class="videoWrap">
+          <video id="video" playsinline muted controls></video>
+          <img id="fallback" src="demo_exam_hall.png" alt="Demo exam hall" />
+          <canvas id="overlay"></canvas>
+
+          <div class="feedBadge" id="feedBadge">DEMO IMAGE</div>
+          <div class="scanline"></div>
+        </div>
+
+        <div class="controls">
+          <label class="btn secondary fileBtn">
+            Upload Video
+            <input type="file" id="videoFile" accept="video/*" hidden />
+          </label>
+          <button class="btn secondary" id="cameraBtn">Use Camera</button>
+          <button class="btn primary" id="startBtn">Start Monitoring</button>
+          <button class="btn danger" id="stopBtn">Stop</button>
+        </div>
+
+        <div class="small muted">
+          MVP note: detection is demonstrated through an interactive event simulator. No biometric identification is performed.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelhead">
+          <div>
+            <div class="eyebrow">2. DETECTION</div>
+            <h2>Behavior Event Simulator</h2>
+          </div>
+        </div>
+
+        <div class="detectorGrid">
+          <button class="eventBtn" data-type="Repeated lateral gaze" data-risk="Medium">
+            <span class="ico">👁</span><b>Repeated lateral gaze</b><small>Behavioral indicator</small>
+          </button>
+          <button class="eventBtn" data-type="Possible unauthorized object" data-risk="High">
+            <span class="ico">⚠</span><b>Possible unauthorized object</b><small>Object interaction</small>
+          </button>
+          <button class="eventBtn" data-type="Seat-to-seat interaction" data-risk="Medium">
+            <span class="ico">↔</span><b>Seat-to-seat interaction</b><small>Peer interaction</small>
+          </button>
+          <button class="eventBtn" data-type="Repeated body turning" data-risk="Low">
+            <span class="ico">⟳</span><b>Repeated body turning</b><small>Posture indicator</small>
+          </button>
+        </div>
+
+        <div class="seatRow">
+          <label>Seat / Candidate ID</label>
+          <input id="seatInput" value="A12" maxlength="12" />
+        </div>
+
+        <div class="small muted">
+          These indicators are alerts for review, not determinations of cheating.
+        </div>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <div class="panel">
+        <div class="panelhead">
+          <div>
+            <div class="eyebrow">3. EVIDENCE</div>
+            <h2>Event Queue</h2>
+          </div>
+          <button class="linkBtn" id="clearBtn">Clear all</button>
+        </div>
+        <div id="eventList" class="eventList emptyState">
+          No incidents flagged yet.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelhead">
+          <div>
+            <div class="eyebrow">4. GENAI LAYER</div>
+            <h2>Incident Summary</h2>
+          </div>
+          <span class="pill subtle">Demo-safe</span>
+        </div>
+
+        <div id="report" class="report">
+          Select an event from the queue, then generate a structured incident summary.
+        </div>
+
+        <div class="controls">
+          <button class="btn primary" id="generateBtn">Generate Summary</button>
+          <button class="btn secondary" id="copyBtn">Copy Report</button>
+          <button class="btn secondary" id="downloadBtn">Download JSON</button>
+        </div>
+
+        <div class="small muted">
+          In this offline MVP, the summary is generated deterministically from event metadata.
+          A production version can connect this module to a secured GenAI backend.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panelhead">
+        <div>
+          <div class="eyebrow">5. HUMAN REVIEW</div>
+          <h2>Reviewer Decision</h2>
+        </div>
+      </div>
+
+      <div class="reviewBar">
+        <div>
+          <div class="selectedLabel">Selected incident</div>
+          <div id="selectedIncident">None</div>
+        </div>
+        <div class="controls noMargin">
+          <button class="btn good" data-decision="Reviewed — no violation confirmed">No Violation</button>
+          <button class="btn secondary reviewDecision" data-decision="Dismissed — insufficient evidence">Dismiss</button>
+          <button class="btn primary reviewDecision" data-decision="Escalated to examination committee">Escalate</button>
+        </div>
+      </div>
+
+      <div class="principles">
+        <div><b>Privacy-first</b><span>No face recognition in this MVP.</span></div>
+        <div><b>Explainable</b><span>Every alert carries event, seat and timestamp metadata.</span></div>
+        <div><b>Human decision</b><span>No automated disciplinary action.</span></div>
+        <div><b>Evidence-based</b><span>Reviewer can inspect the source feed before acting.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SmartExam AI MVP • Conceptual hackathon prototype • Designed for in-person examination environments
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
